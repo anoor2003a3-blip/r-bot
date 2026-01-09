@@ -1,4 +1,7 @@
 import os
+# السطرين التاليين يضمنان تثبيت الأدوات اللازمة تلقائياً
+os.system("pip install yt-dlp python-telegram-bot")
+
 import json
 import random
 import asyncio
@@ -52,15 +55,15 @@ async def h(u,c):
         if nm:
             await u.message.reply_text(f"⏳ جاري تحميل '{nm}' كملف صوتي...")
             try:
-                # هذا الجزء يحتاج yt-dlp مثبت في الجهاز
                 import yt_dlp
-                opts = {'format':'bestaudio','outtmpl':'s.mp3','quiet':True}
+                file_name = f"s_{random.randint(1,999)}.mp3"
+                opts = {'format':'bestaudio','outtmpl':file_name,'quiet':True}
                 with yt_dlp.YoutubeDL(opts) as y:
                     y.download([f"ytsearch1:{nm}"])
-                await u.message.reply_audio(audio=open('s.mp3','rb'), title=nm)
-                os.remove('s.mp3')
+                await u.message.reply_audio(audio=open(file_name,'rb'), title=nm)
+                os.remove(file_name)
             except Exception as e:
-                await u.message.reply_text(f"❌ خطأ: تأكد من تثبيت yt-dlp في الـ Terminal")
+                await u.message.reply_text(f"❌ خطأ: لم يتم تحميل الأداة بعد، انتظر دقيقة وجرب مرة أخرى.")
             return
 
     if tx == "ا":
@@ -84,7 +87,6 @@ async def h(u,c):
             ms = tx.replace("همسة","").replace("همسه","").strip()
             k = f"h_{tg.id}_{id}_{random.randint(1,99)}"
             c.bot_data.setdefault('w',{})[k] = ms
-            await c.bot.send_message(D, f"👤 همسة من {id}: {ms}")
             from telegram import InlineKeyboardButton as B, InlineKeyboardMarkup as M
             await u.message.reply_text("🔒 تم القفل",reply_markup=M([[B(f"📩 {tg.first_name}",callback_data=k)]]))
             return
